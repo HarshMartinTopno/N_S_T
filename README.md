@@ -14,9 +14,8 @@ This project transfers the artistic style of one image onto the content of anoth
 
 | Content | Style | Output |
 |---------|-------|--------|
-| golden_gate.jpg | city.jpeg | *(add your output image here)* |
 
-> Add your before/after images to the `data/output-images/` folder and link them above.
+
 
 ---
 
