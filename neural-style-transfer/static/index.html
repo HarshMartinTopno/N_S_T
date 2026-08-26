@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Neural Style Transfer</title>
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:,">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wordmark">
+    <span class="wordmark__name">Neural Style Transfer</span>
+    <span class="wordmark__ref">Gatys et al., CVPR 2016</span>
+  </div>
+  <div class="device" id="device-badge" data-empty>checking device</div>
+</header>
+
+<main class="layout">
+
+  <!-- ------------------------------------------------------------------ -->
+  <section class="panel panel--inputs">
+    <h2 class="panel__title">Inputs</h2>
+
+    <div class="drops">
+      <label class="drop" id="drop-content" for="file-content">
+        <input type="file" id="file-content" accept="image/*" hidden>
+        <img class="drop__img" alt="">
+        <span class="drop__label">Content</span>
+        <span class="drop__hint">The photo to keep</span>
+      </label>
+
+      <label class="drop" id="drop-style" for="file-style">
+        <input type="file" id="file-style" accept="image/*" hidden>
+        <img class="drop__img" alt="">
+        <span class="drop__label">Style</span>
+        <span class="drop__hint">The look to borrow</span>
+      </label>
+    </div>
+
+    <h2 class="panel__title panel__title--spaced">Settings</h2>
+
+    <div class="field">
+      <label for="height">Output height <em>px</em></label>
+      <div class="field__row">
+        <input type="range" id="height" min="128" max="700" step="8" value="400">
+        <output class="num" id="height-out">400</output>
+      </div>
+      <p class="field__note">Bigger is slower. Cost grows with the pixel count.</p>
+    </div>
+
+    <div class="field">
+      <label for="content-weight">Content weight</label>
+      <div class="field__row">
+        <input type="range" id="content-weight" min="3" max="7" step="0.1" value="5">
+        <output class="num" id="content-weight-out">1e5</output>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="style-weight">Style weight</label>
+      <div class="field__row">
+        <input type="range" id="style-weight" min="2" max="7" step="0.1" value="4.48">
+        <output class="num" id="style-weight-out">3e4</output>
+      </div>
+      <p class="field__note">Raise it past the content weight to let brushwork win.</p>
+    </div>
+
+    <div class="field">
+      <label for="tv-weight">Smoothing <em>tv</em></label>
+      <div class="field__row">
+        <input type="range" id="tv-weight" min="0" max="20" step="0.5" value="1">
+        <output class="num" id="tv-weight-out">1</output>
+      </div>
+    </div>
+
+    <div class="field field--grid">
+      <div>
+        <label for="model">Encoder</label>
+        <select id="model"></select>
+      </div>
+      <div>
+        <label for="optimizer">Optimizer</label>
+        <select id="optimizer"></select>
+      </div>
+      <div>
+        <label for="init-method">Start from</label>
+        <select id="init-method"></select>
+      </div>
+      <div>
+        <label for="iterations">Iterations</label>
+        <input type="number" id="iterations" min="1" value="300">
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="run" class="btn btn--primary" disabled>Add both images</button>
+      <button id="cancel" class="btn" hidden>Stop</button>
+    </div>
+
+    <p class="error" id="error" hidden></p>
+  </section>
+
+  <!-- ------------------------------------------------------------------ -->
+  <section class="panel panel--output">
+    <div class="stage" id="stage" data-state="idle">
+      <img id="result-img" alt="Generated image" hidden>
+      <div class="stage__empty" id="stage-empty">
+        <p>The result appears here.</p>
+        <p class="stage__empty-sub">You will see the image form as the optimizer runs.</p>
+      </div>
+    </div>
+
+    <!-- signature element: the live loss budget -->
+    <div class="readout" id="readout" hidden>
+      <div class="readout__head">
+        <span class="readout__step" id="readout-step">0 / 0</span>
+        <span class="readout__elapsed" id="readout-elapsed">0.0s</span>
+      </div>
+
+      <div class="bar"><div class="bar__fill" id="bar-fill"></div></div>
+
+      <div class="budget" id="budget" aria-hidden="true">
+        <div class="budget__seg budget__seg--content" style="flex-grow:1"></div>
+        <div class="budget__seg budget__seg--style" style="flex-grow:1"></div>
+        <div class="budget__seg budget__seg--tv" style="flex-grow:1"></div>
+      </div>
+
+      <dl class="losses">
+        <div><dt>content</dt><dd id="loss-content">—</dd></div>
+        <div><dt>style</dt><dd id="loss-style">—</dd></div>
+        <div><dt>tv</dt><dd id="loss-tv">—</dd></div>
+        <div><dt>total</dt><dd id="loss-total">—</dd></div>
+      </dl>
+    </div>
+
+    <div class="output-actions" id="output-actions" hidden>
+      <a class="btn btn--primary" id="download" download>Download image</a>
+      <span class="output-actions__meta" id="output-meta"></span>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <span>Frozen VGG features. Only the pixels are optimized.</span>
+</footer>
+
+<script src="/app.js"></script>
+</body>
+</html>
